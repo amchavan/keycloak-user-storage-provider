@@ -58,11 +58,13 @@ public class AlmaUserStorageProviderFactory implements UserStorageProviderFactor
         // this configuration is configurable in the admin-console
         return ProviderConfigurationBuilder.create()
                 .property()
-                .name("almaParam1")
-                .label("ALMA Parameter 1")
-                .helpText("Description of ALMA Parameter 1")
+                .name( "param1" )
+                .label( "Parameter 1" )
+                .helpText( "Placeholder: the value of this parameter could be set " +
+                           "here, providing interactive " +
+                           "configuration for this User Storage Provider" )
                 .type(ProviderConfigProperty.STRING_TYPE)
-                .defaultValue("1")
+                .defaultValue("ignored")
                 .add()
                 // more properties
                 // .property()
