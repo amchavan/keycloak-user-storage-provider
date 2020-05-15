@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/user-storage-provider.iml" filepath="$PROJECT_DIR$/user-storage-provider.iml" />
+      <module fileurl="file://$PROJECT_DIR$/ear-module/user-storage-provider-bundle.iml" filepath="$PROJECT_DIR$/ear-module/user-storage-provider-bundle.iml" />
+      <module fileurl="file://$PROJECT_DIR$/jar-module/user-storage-provider-module.iml" filepath="$PROJECT_DIR$/jar-module/user-storage-provider-module.iml" />
+    </modules>
+  </component>
+</project>
