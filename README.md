@@ -16,9 +16,10 @@ by [Thomas Darimont](https://github.com/thomasdarimont).
 
 ## Build
 
-Check out keycloak-user-storage-provider (**NOTE**: 
-currently hosted on GitHub at 
-git@github.com:amchavan/keycloak-user-storage-provider.git).
+Check out keycloak-user-storage-provider. (**NOTE**: 
+currently
+hosted on 
+[GitHub](https://github.com/amchavan/keycloak-user-storage-provider).)
 
 Build the EAR file:
 
