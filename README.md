@@ -1,14 +1,14 @@
 # A custom Keycloak User Storage Provider
 
 Implements a Keycloak User Storage Provider for
-ALMA's User Registry and packages it as an `.ear`, allowing
-the use of custom dependencies that are not part of the
-Keycloak module space.  
+ALMA's User Registry.  
 
 The actual storage provider is in the `jar-module` project; the `ear-module`
 packages that and its dependencies in an 
-[EAR file](https://en.wikipedia.org/wiki/EAR_(file_format)) 
-suitable for deployment.
+[EAR file](https://en.wikipedia.org/wiki/EAR_(file_format))
+suitable for deployment, thus allowing
+the use of custom dependencies that are not part of the
+Keycloak module space .
 
 Based on 
 [A custom Keycloak User Storage Provider](https://github.com/thomasdarimont/keycloak-user-storage-provider-demo) 
