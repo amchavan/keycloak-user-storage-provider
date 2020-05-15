@@ -83,11 +83,6 @@ public class UserAdapter extends AbstractUserAdapterFederatedStorage implements 
         // no-op
     }
 
-//    @Override
-//    public List<String> getAttribute(String attributeName) {
-//        return this.getAttributes().get( attributeName );
-//    }
-
     @Override
     public Map<String, List<String>> getAttributes() {
         return this.attributes;
