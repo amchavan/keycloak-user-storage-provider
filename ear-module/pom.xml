@@ -7,7 +7,7 @@
     <parent>
         <groupId>alma.obops.keycloak</groupId>
         <artifactId>user-storage-provider</artifactId>
-        <version>10.0.1</version> <!-- should be aligned with the version of the Keycloak server -->
+        <version>11.0.2</version> <!-- should be aligned with the version of the Keycloak server -->
     </parent>
 
     <artifactId>user-storage-provider-bundle</artifactId>

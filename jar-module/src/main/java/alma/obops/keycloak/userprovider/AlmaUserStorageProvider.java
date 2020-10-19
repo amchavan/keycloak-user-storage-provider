@@ -5,8 +5,8 @@ import org.keycloak.component.ComponentModel;
 import org.keycloak.credential.CredentialInput;
 import org.keycloak.credential.CredentialInputUpdater;
 import org.keycloak.credential.CredentialInputValidator;
-import org.keycloak.credential.CredentialModel;
 import org.keycloak.models.*;
+import org.keycloak.models.credential.PasswordCredentialModel;
 import org.keycloak.storage.ReadOnlyException;
 import org.keycloak.storage.StorageId;
 import org.keycloak.storage.UserStorageProvider;
@@ -47,7 +47,7 @@ public class AlmaUserStorageProvider implements
     @Override
     public boolean supportsCredentialType(String credentialType) {
         LOGGER.infov( "supportsCredentialType: credentialType={0}", credentialType );
-        return CredentialModel.PASSWORD.equals(credentialType);
+        return PasswordCredentialModel.TYPE.equals(credentialType);
     }
 
     @Override
@@ -73,7 +73,7 @@ public class AlmaUserStorageProvider implements
     @Override
     public boolean updateCredential(RealmModel realm, UserModel user, CredentialInput input) {
 //        LOGGER.infov( "updateCredential: realm={0} user={1} input={2}", realm.getId(), user.getUsername(), input );
-        if (input.getType().equals( CredentialModel.PASSWORD )) {
+        if (input.getType().equals( PasswordCredentialModel.TYPE )) {
             throw new ReadOnlyException( "User is read only" );
         }
 

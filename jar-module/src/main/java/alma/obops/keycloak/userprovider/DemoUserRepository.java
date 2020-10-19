@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
  */
 class DemoUserRepository implements UserRepository {
 
-    private List<User> users;
+    private final List<User> users;
 
     public DemoUserRepository() {
 

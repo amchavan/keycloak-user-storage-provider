@@ -13,13 +13,13 @@ import java.util.*;
  * Maps an instance of the User class to what Keycloak requires.
  * <p>
  * User roles are made available via the {@value ALMA_ROLES_ATTRIBUTE} attribute to avoid conflicts with
- * Keycloak's own use of "roles".
+ * Keycloak usage of "roles".
  *
  * @author amchavan, 30-Apr-2020
  */
 public class UserAdapter extends AbstractUserAdapterFederatedStorage implements UserModel {
 
-    /** Keycloak user attribute holding the users's role list */
+    /** Keycloak user attribute holding the users' role list */
     public static final String ALMA_ROLES_ATTRIBUTE = "user_roles";
 
     private final User user;

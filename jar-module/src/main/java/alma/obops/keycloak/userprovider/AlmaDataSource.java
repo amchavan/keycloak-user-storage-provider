@@ -28,8 +28,6 @@ public class AlmaDataSource {
 	private String url;
 	private String username;
 	private String password;
-	private String driver;
-
 
 	public AlmaDataSource() throws IOException {
 		String acsdata = System.getenv( "ACSDATA" );

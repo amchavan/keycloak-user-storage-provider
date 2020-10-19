@@ -6,8 +6,8 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="user-storage-provider-module" />
         <module name="user-storage-provider-bundle" />
+        <module name="user-storage-provider-module" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
