@@ -1,5 +1,6 @@
 package alma.obops.keycloak.userprovider;
 
+import org.jboss.logging.Logger;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 
@@ -62,10 +63,11 @@ public class AlmaUserRepository implements UserRepository {
         "ORDER BY  application, name";
 
 
-//	private final Logger log = Logger.getLogger( AlmaUserRepository.class.getSimpleName() );
+	private final Logger LOGGER = Logger.getLogger( AlmaUserRepository.class.getSimpleName() );
 	private final JdbcTemplate jdbcTemplate;
 
     public AlmaUserRepository( DataSource dataSource ) {
+        LOGGER.infov( "create(): creating AlmaUserRepository with dataSource={0}", dataSource );
 		this.jdbcTemplate = new JdbcTemplate( dataSource );
     }
 
@@ -135,8 +137,15 @@ public class AlmaUserRepository implements UserRepository {
 
     @Override
     public User findUserById( String username ) {
+//        new RuntimeException( ">>> here" ).printStackTrace();
+        LOGGER.infov( "findUserById(): looking for " + username );
+        if( username == null ) {
+            throw new IllegalArgumentException( "Null username" );
+        }
+
         try {
             Map<String, Object> userRow = jdbcTemplate.queryForMap( SELECT_ACCOUNT, username) ;
+            LOGGER.infov( "findUserById(): found: " + userRow );
             return convertDbRowToUser( userRow );
         }
         catch (EmptyResultDataAccessException e) {
@@ -183,6 +192,8 @@ public class AlmaUserRepository implements UserRepository {
         }
 
         String passwordDigest = computeMD5Hash( password );
+        //        System.out.println( ">>> validateCredentials: passwordDigest=" + passwordDigest +
+        //                            ", user.getPassword()=" + user.getPassword() );
         return passwordDigest.equals( user.getPassword() );
 	}
 }

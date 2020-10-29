@@ -31,7 +31,7 @@ public class AlmaUserStorageProvider implements
         CredentialInputUpdater,
         CredentialInputValidator {
 
-    private static final Logger LOGGER = Logger.getLogger(AlmaUserStorageProvider.class);
+    private static final Logger LOGGER = Logger.getLogger( AlmaUserStorageProvider.class.getSimpleName() );
 
     private final KeycloakSession session;
     private final ComponentModel model;
@@ -61,7 +61,7 @@ public class AlmaUserStorageProvider implements
      */
     @Override
     public boolean isValid(RealmModel realm, UserModel user, CredentialInput input) {
-//        LOGGER.infov( "isValid: realm={0} user={1} input={2}", realm.getId(), user.getUsername(), input );
+        LOGGER.infov( "isValid: realm={0} user={1} input={2}", realm.getId(), user.getUsername(), input );
         if (!supportsCredentialType(input.getType()) || !(input instanceof UserCredentialModel)) {
             return false;
         }

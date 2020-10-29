@@ -1,10 +1,12 @@
 package alma.obops.keycloak.userprovider;
 
-import com.mchange.v2.c3p0.ComboPooledDataSource;
+import org.apache.commons.dbcp.BasicDataSource;
 import org.jboss.logging.Logger;
 
 import javax.sql.DataSource;
-import java.io.*;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.Properties;
 
 /**
@@ -67,14 +69,10 @@ public class AlmaDataSource {
 
 	public DataSource getDataSource() {
 
-		java.util.Properties props = new java.util.Properties();
-		props.put("v$session.program", "Keycloak");
-
-		ComboPooledDataSource dataSource = new ComboPooledDataSource();
-		dataSource.setProperties( props );
-		dataSource.setUser( username );
+		BasicDataSource dataSource = new BasicDataSource();
+		dataSource.setUrl( url );
+		dataSource.setUsername( username );
 		dataSource.setPassword( password );
-		dataSource.setJdbcUrl( url );
 
 		return dataSource;
 	}
