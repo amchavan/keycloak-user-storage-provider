@@ -13,7 +13,7 @@
     <bytecodeTargetLevel>
       <module name="user-storage-provider" target="1.8" />
       <module name="user-storage-provider-bundle" target="1.8" />
-      <module name="user-storage-provider-module" target="1.8" />
+      <module name="user-storage-provider-module" target="11" />
     </bytecodeTargetLevel>
   </component>
 </project>

@@ -110,7 +110,7 @@ public class AlmaUserRepository implements UserRepository {
 
         List<String> roles = retrieveUserRoles( ret.getUsername() );
         ret.setRoles( roles );
-
+//        LOGGER.infov( "convertDbRowToUser(): set roles of {0} to {1}", ret.getUsername(), ret.getRoles() );
         return ret;
     }
 
@@ -137,10 +137,10 @@ public class AlmaUserRepository implements UserRepository {
 
     @Override
     public User findUserById( String username ) {
-//        new RuntimeException( ">>> here" ).printStackTrace();
+
         LOGGER.infov( "findUserById(): looking for " + username );
         if( username == null ) {
-            throw new IllegalArgumentException( "Null username" );
+            return null;
         }
 
         try {
@@ -149,20 +149,24 @@ public class AlmaUserRepository implements UserRepository {
             return convertDbRowToUser( userRow );
         }
         catch (EmptyResultDataAccessException e) {
-            // found no rows
-            return null;
+            return null;        // found no rows
         }
     }
 
     @Override
     public User findUserByEmail( String email ) {
+
+        LOGGER.infov( "findUserByEmail(): looking for " + email );
+        if( email == null ) {
+            return null;
+        }
+
         try {
             Map<String, Object> userRow = jdbcTemplate.queryForMap( SELECT_ACCOUNT_BY_EMAIL, email ) ;
             return convertDbRowToUser( userRow );
         }
         catch (EmptyResultDataAccessException e) {
-            // found no rows
-            return null;
+            return null;        // found no rows
         }
     }
 

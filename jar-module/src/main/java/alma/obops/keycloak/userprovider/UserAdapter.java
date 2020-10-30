@@ -1,5 +1,6 @@
 package alma.obops.keycloak.userprovider;
 
+import org.jboss.logging.Logger;
 import org.keycloak.component.ComponentModel;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.RealmModel;
@@ -26,7 +27,10 @@ public class UserAdapter extends AbstractUserAdapterFederatedStorage implements 
     private final String keycloakId;
     private final Map<String, List<String>> attributes;
 
+    private final Logger LOGGER = Logger.getLogger( UserAdapter.class.getSimpleName() );
+
     public UserAdapter(KeycloakSession session, RealmModel realm, ComponentModel model, User user) {
+
         super(session, realm, model);
         if( user == null ) {
             throw new IllegalArgumentException( "User cannot be null" );
@@ -36,6 +40,7 @@ public class UserAdapter extends AbstractUserAdapterFederatedStorage implements 
         this.keycloakId = StorageId.keycloakId(model, user.getId());
         this.attributes = new HashMap<>();
         this.attributes.put( ALMA_ROLES_ATTRIBUTE, user.getRoles() );
+//        LOGGER.infov( "UserAdapter(): set attribute {0} to {1}", ALMA_ROLES_ATTRIBUTE, this.attributes.get( ALMA_ROLES_ATTRIBUTE ) );
     }
 
     @Override

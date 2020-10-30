@@ -121,13 +121,21 @@ public class AlmaUserStorageProvider implements
     @Override
     public UserModel getUserByUsername(String username, RealmModel realm) {
 //        LOGGER.infov("getUserByUsername(): realm={0} username={1}", realm.getId(), username);
-        return new UserAdapter( session, realm, model, repository.findUserById( username ));
+        final var user = repository.findUserById(username);
+        if( user == null ) {
+            return null;
+        }
+        return new UserAdapter( session, realm, model, user );
     }
 
     @Override
     public UserModel getUserByEmail(String email, RealmModel realm) {
+        final var user = repository.findUserByEmail(email);
+        if( user == null ) {
+            return null;
+        }
 //        LOGGER.infov("lookup user by email: realm={0} email={1}", realm.getId(), email);
-        return new UserAdapter( session, realm, model, repository.findUserByEmail( email ));
+        return new UserAdapter( session, realm, model, user );
     }
 
     @Override
