@@ -3,11 +3,9 @@ package alma.obops.keycloak.userprovider;
 import org.jboss.logging.Logger;
 import org.keycloak.component.ComponentModel;
 import org.keycloak.credential.CredentialInput;
-import org.keycloak.credential.CredentialInputUpdater;
 import org.keycloak.credential.CredentialInputValidator;
 import org.keycloak.models.*;
 import org.keycloak.models.credential.PasswordCredentialModel;
-import org.keycloak.storage.ReadOnlyException;
 import org.keycloak.storage.StorageId;
 import org.keycloak.storage.UserStorageProvider;
 import org.keycloak.storage.user.UserLookupProvider;
@@ -16,7 +14,6 @@ import org.keycloak.storage.user.UserQueryProvider;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -28,7 +25,6 @@ public class AlmaUserStorageProvider implements
         UserStorageProvider,
         UserLookupProvider,
         UserQueryProvider,
-        CredentialInputUpdater,
         CredentialInputValidator {
 
     private static final Logger LOGGER = Logger.getLogger( AlmaUserStorageProvider.class.getSimpleName() );
@@ -68,26 +64,6 @@ public class AlmaUserStorageProvider implements
 
         UserCredentialModel cred = (UserCredentialModel) input;
         return repository.validateCredentials(user.getUsername(), cred.getChallengeResponse());
-    }
-
-    @Override
-    public boolean updateCredential(RealmModel realm, UserModel user, CredentialInput input) {
-//        LOGGER.infov( "updateCredential: realm={0} user={1} input={2}", realm.getId(), user.getUsername(), input );
-        if (input.getType().equals( PasswordCredentialModel.TYPE )) {
-            throw new ReadOnlyException( "User is read only" );
-        }
-
-        return false;
-    }
-
-    @Override
-    public void disableCredentialType(RealmModel realm, UserModel user, String credentialType) {
-        // no-op
-    }
-
-    @Override
-    public Set<String> getDisableableCredentialTypes(RealmModel realm, UserModel user) {
-        return Collections.emptySet();
     }
 
     @Override

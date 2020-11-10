@@ -44,27 +44,26 @@ public class AlmaDataSource {
 	private void loadProperties( String propsPathname ) throws IOException {
 		LOGGER.debugv( ">>> loadProperties(): propsPathname={0}", propsPathname );
 
-		InputStreamReader reader = new InputStreamReader( new FileInputStream( propsPathname ));
-		Properties props = new Properties();
-		props.load( reader );
+		try( InputStreamReader reader = new InputStreamReader( new FileInputStream( propsPathname ))) {
 
-      	this.url = props.getProperty( CONNECTION_PROPERTY );
-      	checkForNull( CONNECTION_PROPERTY, this.url );
+			Properties props = new Properties();
+			props.load(reader);
 
-		this.username = props.getProperty( USER_PROPERTY );
-		checkForNull( USER_PROPERTY, this.username );
+			this.url      = getRequiredProperty(props, CONNECTION_PROPERTY);
+			this.username = getRequiredProperty(props, USER_PROPERTY);
+			this.password = getRequiredProperty(props, PASSWORD_PROPERTY);
 
-		this.password = props.getProperty(PASSWORD_PROPERTY);
-		checkForNull(PASSWORD_PROPERTY, this.password );
-
-		LOGGER.info( "Database URL : " + url );
-		LOGGER.info( "Database user: " + username );
+			LOGGER.info("Database URL : " + url);
+			LOGGER.info("Database user: " + username);
+		}
 	}
 
-	private void checkForNull( String propertyName, String propertyValue ) {
+	private String getRequiredProperty( Properties props, String propertyName ) {
+		String propertyValue = props.getProperty(propertyName);
 		if ( propertyValue == null ) {
 			throw new RuntimeException( "Undefined property: " + propertyName );
 		}
+		return propertyValue;
 	}
 
 	public DataSource getDataSource() {

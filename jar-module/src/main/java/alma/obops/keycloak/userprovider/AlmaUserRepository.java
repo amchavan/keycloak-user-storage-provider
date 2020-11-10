@@ -2,9 +2,7 @@ package alma.obops.keycloak.userprovider;
 
 import org.jboss.logging.Logger;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.core.JdbcTemplate;
-
-//import org.jboss.logging.Logger;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 
 import javax.sql.DataSource;
 import javax.xml.bind.DatatypeConverter;
@@ -13,6 +11,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+
+//import org.jboss.logging.Logger;
 
 /**
  * An implementation of UserRepository for the ALMA User Registry
@@ -24,13 +24,13 @@ public class AlmaUserRepository implements UserRepository {
     private static final String SELECT_ACCOUNT =
         "SELECT account_id, email, firstname, lastname, password_digest " +
         "FROM   account " +
-        "WHERE  account_id = ? " +
+        "WHERE  account_id = :account_id " +
         "AND    active = 'T' ";
 
     private static final String SELECT_ACCOUNT_BY_EMAIL =
         "SELECT account_id, email, firstname, lastname, password_digest " +
         "FROM   account " +
-        "WHERE  email = ? " +
+        "WHERE  email = :email " +
         "AND    active = 'T' ";
 
     private static final String SELECT_ALL =
@@ -39,7 +39,7 @@ public class AlmaUserRepository implements UserRepository {
         "WHERE active = 'T' " +
         "ORDER BY account_id";
 
-    public static final String PAGINATION = " OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
+    public static final String PAGINATION = " OFFSET :offset ROWS FETCH NEXT :count ROWS ONLY";
     
     private static final String SELECT_ALL_WITH_PAGINATION = SELECT_ALL + PAGINATION;
 
@@ -47,7 +47,7 @@ public class AlmaUserRepository implements UserRepository {
         "SELECT account_id, email, firstname, lastname, password_digest " +
         "FROM account " +
         "WHERE active = 'T' " +
-        "AND   (account_id like ? OR email like ? ) " +
+        "AND   (account_id like :substring OR email like :substring ) " +
         "ORDER BY account_id";
 
     private static final String SELECT_SOME_WITH_PAGINATION = SELECT_SOME + PAGINATION;
@@ -59,16 +59,17 @@ public class AlmaUserRepository implements UserRepository {
         "SELECT    application, name " +
         "FROM      role " +
         "LEFT JOIN account_role ON role.role_no = account_role.role_no " +
-        "WHERE     account_role.account_id = ? " +
+        "WHERE     account_role.account_id = :username " +
         "ORDER BY  application, name";
 
 
 	private final Logger LOGGER = Logger.getLogger( AlmaUserRepository.class.getSimpleName() );
-	private final JdbcTemplate jdbcTemplate;
+	private final NamedParameterJdbcTemplate jdbcTemplate;
+    public static final Map<String, String> NO_PARAMS = Map.of();
 
     public AlmaUserRepository( DataSource dataSource ) {
         LOGGER.infov( "create(): creating AlmaUserRepository with dataSource={0}", dataSource );
-		this.jdbcTemplate = new JdbcTemplate( dataSource );
+		this.jdbcTemplate = new NamedParameterJdbcTemplate( dataSource );
     }
 
     // From https://www.baeldung.com/java-md5
@@ -80,13 +81,14 @@ public class AlmaUserRepository implements UserRepository {
             return DatatypeConverter.printHexBinary( digest ).toLowerCase();
         }
         catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error( "MD5 hash computation failed", e );
             throw new RuntimeException(e);
         }
     }
 
     private List<String> retrieveUserRoles(String username ) {
-        List<Map<String, Object>> rows = jdbcTemplate.queryForList( SELECT_ROLES, username );
+        Map<String,String> namedParameters = Map.of( "username", username );
+        List<Map<String, Object>> rows = jdbcTemplate.queryForList( SELECT_ROLES, namedParameters );
         return rows.stream().map( convertDbRowToRole() ).collect( Collectors.toList());
     }
 
@@ -100,18 +102,12 @@ public class AlmaUserRepository implements UserRepository {
     /** A poor man's Hibernate */
     private User convertDbRowToUser( Map<String, Object> row ) {
 
-        final var account_id = row.get("account_id");
-        final var firstname = row.get("firstname");
-        final var lastname = row.get("lastname");
-        final var email = row.get("email");
-        final var password_digest = row.get("password_digest");
-        final User ret = new User(
-                account_id == null ? "" : account_id.toString(),
-                firstname == null ? "" : firstname.toString(),
-                lastname == null ? "" : lastname.toString(),
-                email == null ? "" : email.toString(),
-                password_digest == null ? "" : password_digest.toString()
-        );
+        final var account_id = row.getOrDefault("account_id", "").toString();
+        final var firstname = row.getOrDefault("firstname", "").toString();
+        final var lastname = row.getOrDefault("lastname", "").toString();
+        final var email = row.getOrDefault("email", "").toString();
+        final var password_digest = row.getOrDefault("password_digest", "").toString();
+        final User ret = new User(account_id, firstname, lastname, email, password_digest);
 
         List<String> roles = retrieveUserRoles( ret.getUsername() );
         ret.setRoles( roles );
@@ -121,19 +117,20 @@ public class AlmaUserRepository implements UserRepository {
 
 	@Override
 	public List<User> getAllUsers() {
-		List<Map<String, Object>> rows = jdbcTemplate.queryForList( SELECT_ALL );
+        List<Map<String, Object>> rows = jdbcTemplate.queryForList( SELECT_ALL, NO_PARAMS );
         return rows.stream().map( this::convertDbRowToUser ).collect( Collectors.toList() );
 	}
 
     @Override
     public List<User> getAllUsers(int firstRow, int rowCount) {
-        List<Map<String, Object>> rows = jdbcTemplate.queryForList( SELECT_ALL_WITH_PAGINATION, firstRow, rowCount );
+        Map<String,Integer> namedParameters = Map.of( "offset", firstRow, "count", rowCount );
+        List<Map<String, Object>> rows = jdbcTemplate.queryForList( SELECT_ALL_WITH_PAGINATION, namedParameters );
         return rows.stream().map( this::convertDbRowToUser ).collect( Collectors.toList() );
     }
 
     @Override
 	public int getAllUsersCount() {
-		Integer count = jdbcTemplate.queryForObject( COUNT_ALL, Integer.class );
+		Integer count = jdbcTemplate.queryForObject( COUNT_ALL, NO_PARAMS, Integer.class );
 		if( count == null ) {
 			throw new RuntimeException( "getUsersCount(): SQL query returned null" );
 		}
@@ -149,7 +146,8 @@ public class AlmaUserRepository implements UserRepository {
         }
 
         try {
-            Map<String, Object> userRow = jdbcTemplate.queryForMap( SELECT_ACCOUNT, username) ;
+            Map<String,String> namedParameters = Map.of( "account_id", username );
+            Map<String, Object> userRow = jdbcTemplate.queryForMap( SELECT_ACCOUNT, namedParameters ) ;
             LOGGER.infov( "findUserById(): found: " + userRow );
             return convertDbRowToUser( userRow );
         }
@@ -167,7 +165,8 @@ public class AlmaUserRepository implements UserRepository {
         }
 
         try {
-            Map<String, Object> userRow = jdbcTemplate.queryForMap( SELECT_ACCOUNT_BY_EMAIL, email ) ;
+            Map<String,String> namedParameters = Map.of( "email", email );
+            Map<String, Object> userRow = jdbcTemplate.queryForMap( SELECT_ACCOUNT_BY_EMAIL, namedParameters ) ;
             return convertDbRowToUser( userRow );
         }
         catch (EmptyResultDataAccessException e) {
@@ -178,7 +177,8 @@ public class AlmaUserRepository implements UserRepository {
 	@Override
 	public List<User> findUsers( String query ) {
 	    String likeThis = "%" + query + "%";
-        List<Map<String, Object>> rows = jdbcTemplate.queryForList( SELECT_SOME, likeThis, likeThis );
+        Map<String,String> namedParameters = Map.of( "substring", likeThis );
+        List<Map<String, Object>> rows = jdbcTemplate.queryForList( SELECT_SOME, namedParameters );
 //        System.out.println( "findUsers(): rows: size=" + rows.size() );
         return rows.stream().map( this::convertDbRowToUser ).collect( Collectors.toList() );
 	}
@@ -186,8 +186,9 @@ public class AlmaUserRepository implements UserRepository {
     @Override
     public List<User> findUsers(String query, int firstRow, int rowCount) {
         String likeThis = "%" + query + "%";
+        Map<String,Object> namedParameters = Map.of( "substring", likeThis, "offset", firstRow, "count", rowCount );
         List<Map<String, Object>> rows =
-                jdbcTemplate.queryForList( SELECT_SOME_WITH_PAGINATION, likeThis, likeThis, firstRow, rowCount );
+                jdbcTemplate.queryForList( SELECT_SOME_WITH_PAGINATION, namedParameters );
 //        System.out.println( "findUsers(): rows: size=" + rows.size() );
         return rows.stream().map( this::convertDbRowToUser ).collect( Collectors.toList() );
     }
