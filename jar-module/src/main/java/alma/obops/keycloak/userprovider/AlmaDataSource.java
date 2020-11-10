@@ -22,7 +22,7 @@ import java.util.Properties;
 public class AlmaDataSource {
 
 	private static final String PATH_TO_PROPS = "/config/archiveConfig.properties";
-	private static final Logger LOGGER = Logger.getLogger(AlmaDataSource.class);
+	private static final Logger LOGGER = Logger.getLogger(AlmaDataSource.class.getSimpleName());
 	public static final String CONNECTION_PROPERTY = "archive.relational.connection";
 	public static final String USER_PROPERTY = "archive.relational.user";
 	public static final String PASSWORD_PROPERTY = "archive.relational.passwd";

@@ -36,16 +36,7 @@ public class TestUserAdapter {
     @Test
     public void creation() {
 
-        UserAdapter ua = new UserAdapter( null, null, componentModel, user) {
-            // Need to override a method otherwise tests will fail in this
-            // mocked environment
-            // amchavan, 05-MAy-2020
-            // ------------------------------------------------------------
-            @Override
-            public List<String> getAttribute(String name) {
-                return super.getAttributes().get(name);
-            }
-        };
+        UserAdapter ua = new UserAdapter( null, null, componentModel, user );
 
         assertEquals( user.getUsername(),  ua.getUsername() );
         assertEquals( user.getEmail(),     ua.getEmail() );

@@ -87,10 +87,10 @@ public class AlmaUserRepository implements UserRepository {
 
     private List<String> retrieveUserRoles(String username ) {
         List<Map<String, Object>> rows = jdbcTemplate.queryForList( SELECT_ROLES, username );
-        return rows.stream().map( convertRowToRole() ).collect( Collectors.toList());
+        return rows.stream().map( convertDbRowToRole() ).collect( Collectors.toList());
     }
 
-    private Function<Map<String, Object>, String> convertRowToRole() {
+    private Function<Map<String, Object>, String> convertDbRowToRole() {
         return row ->
                 row.get( "application" ).toString().trim()
                 + "/"
@@ -100,12 +100,17 @@ public class AlmaUserRepository implements UserRepository {
     /** A poor man's Hibernate */
     private User convertDbRowToUser( Map<String, Object> row ) {
 
+        final var account_id = row.get("account_id");
+        final var firstname = row.get("firstname");
+        final var lastname = row.get("lastname");
+        final var email = row.get("email");
+        final var password_digest = row.get("password_digest");
         final User ret = new User(
-                row.get( "account_id" ).toString(),
-                row.get( "firstname" ).toString(),
-                row.get( "lastname" ).toString(),
-                row.get( "email" ).toString(),
-                row.get( "password_digest" ).toString()
+                account_id == null ? "" : account_id.toString(),
+                firstname == null ? "" : firstname.toString(),
+                lastname == null ? "" : lastname.toString(),
+                email == null ? "" : email.toString(),
+                password_digest == null ? "" : password_digest.toString()
         );
 
         List<String> roles = retrieveUserRoles( ret.getUsername() );

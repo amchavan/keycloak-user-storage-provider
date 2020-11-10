@@ -40,7 +40,7 @@ public class UserAdapter extends AbstractUserAdapterFederatedStorage implements 
         this.keycloakId = StorageId.keycloakId(model, user.getId());
         this.attributes = new HashMap<>();
         this.attributes.put( ALMA_ROLES_ATTRIBUTE, user.getRoles() );
-//        LOGGER.infov( "UserAdapter(): set attribute {0} to {1}", ALMA_ROLES_ATTRIBUTE, this.attributes.get( ALMA_ROLES_ATTRIBUTE ) );
+        LOGGER.infov( "UserAdapter(): set attribute {0} to {1}", ALMA_ROLES_ATTRIBUTE, this.attributes.get( ALMA_ROLES_ATTRIBUTE ) );
     }
 
     @Override
@@ -89,7 +89,12 @@ public class UserAdapter extends AbstractUserAdapterFederatedStorage implements 
     }
 
     @Override
-    public Map<String, List<String>> getAttributes() {
-        return this.attributes;
+    public List<String> getAttribute( String attributeName ) {
+        var attributeValue = this.attributes.get( attributeName );
+        if( attributeValue == null ) {
+            return super.getAttribute( attributeName );
+        }
+        LOGGER.infov( "getAttribute(): for: {0} returning: {1}", attributeName, attributeValue );
+        return attributeValue;
     }
 }

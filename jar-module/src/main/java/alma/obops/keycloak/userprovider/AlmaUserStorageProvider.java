@@ -46,7 +46,7 @@ public class AlmaUserStorageProvider implements
 
     @Override
     public boolean supportsCredentialType(String credentialType) {
-        LOGGER.infov( "supportsCredentialType: credentialType={0}", credentialType );
+//        LOGGER.infov( "supportsCredentialType: credentialType={0}", credentialType );
         return PasswordCredentialModel.TYPE.equals(credentialType);
     }
 
@@ -61,7 +61,7 @@ public class AlmaUserStorageProvider implements
      */
     @Override
     public boolean isValid(RealmModel realm, UserModel user, CredentialInput input) {
-        LOGGER.infov( "isValid: realm={0} user={1} input={2}", realm.getId(), user.getUsername(), input );
+//        LOGGER.infov( "isValid: realm={0} user={1} input={2}", realm.getId(), user.getUsername(), input );
         if (!supportsCredentialType(input.getType()) || !(input instanceof UserCredentialModel)) {
             return false;
         }
